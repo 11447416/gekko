@@ -12,10 +12,11 @@ var log = require('../core/log');
 var config = require('../core/util').getConfig();
 var queue = require('../queue');
 
-var timeRange = 5;
+var timeRange = 20;
 var has = false;
 var cb;
 var strat = {};
+var sum=0;
 strat.init = function () {
   queue.setMaxLen(timeRange)
 }
@@ -25,45 +26,51 @@ strat.update = function (candle) {
 }
 
 strat.log = function () {
-
+log.debug("sum:"+sum)
 }
 
 
 strat.check = function () {
-  if (queue.size() >= timeRange) {
-    //买入信号
+  //买入信号
 
-    if (has && queue.getFront().high - cb.high > 40) {
-      //止盈
-      this.advice('short');
-      has = false;
-      return
-    }
-    if (has && queue.getFront().high - cb.high < -200) {
-      //止损
-      this.advice('short');
-      has = false;
-      return
-    }
+  if (has && queue.getTail().high - cb.high > 50) {
+    //止盈
+    this.advice('short');
+    log.debug("止盈：" + queue.getTail().high + "-" + cb.high + "=" + (queue.getTail().close - cb.high))
+    sum=sum+(queue.getTail().close - cb.high);
+    has = false;
+    return
+  }
+  if (has && queue.getTail().high - cb.high < -500) {
 
-    //下跌趋势结束
-    var range = strat.getRange(queue.getAll());
-    if (!has&&range.max.high - range.min.high > 40 && !range.grow){
-        this.advice('long');
-        cb = queue.getFront();
-        has = true;
-        return;
-    }
+    //止损
+    this.advice('short');
+    log.debug("止损：" + queue.getTail().high + "-" + cb.high + "=" + (queue.getTail().high - cb.high))
+    sum=sum+(queue.getTail().close - cb.high);
 
-    // if (!strat.isDown() && !has) {
-    //   this.advice('long');
-    //   cb = queue.getFront();
-    //   has = true;
-    //   return;
-    // }
-      }
+    has = false;
+    return
+  }
+
+  //下跌趋势结束
+  var range = strat.getRange(queue.getAll());
+  if (!has && range.max.high - range.min.high > 20 && !range.grow) {
+    this.advice('long');
+    log.debug("购买：" +queue.getTail().high)
+    cb = queue.getFront();
+    has = true;
+    return;
+  }
+
+  // if (!strat.isDown() && !has) {
+  //   this.advice('long');
+  //   cb = queue.getFront();
+  //   has = true;
+  //   return;
+  // }
 
 }
+
 strat.sta = function () {
   var a = queue.getAll();
   for (var candle in a) {
