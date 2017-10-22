@@ -7,12 +7,12 @@ const CONFIG = {
   headless: false,
   api: {
     host: '115.28.141.240',
-    port: 3000,
+    port: 3001,
   },
   ui: {
     ssl: false,
     host: '115.28.141.240',
-    port: 3000,
+    port: 3001,
     path: '/'
   },
   adapter: 'sqlite'
