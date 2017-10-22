@@ -41,7 +41,7 @@ strat.check = function () {
     has = false;
     return
   }
-  if (has && queue.getTail().high - cb.high < -500) {
+  if (has && queue.getTail().high - cb.high < -100) {
 
     //止损
     this.advice('short');
@@ -54,7 +54,7 @@ strat.check = function () {
 
   //下跌趋势结束
   var range = strat.getRange(queue.getAll());
-  if (!has && range.max.high - range.min.high > 20 && !range.grow) {
+  if (!has && range.max.high - range.min.high > 20&&(queue.getTail().open-queue.getTail().close>0) && !range.grow) {
     this.advice('long');
     log.debug("购买：" +queue.getTail().high)
     cb = queue.getFront();
