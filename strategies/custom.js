@@ -12,7 +12,7 @@ var log = require('../core/log');
 var config = require('../core/util').getConfig();
 var queue = require('../queue');
 
-var timeRange = 20;
+var timeRange = 8;
 var has = false;
 var cb;
 var strat = {};
@@ -47,14 +47,13 @@ strat.check = function () {
     this.advice('short');
     log.debug("止损：" + queue.getTail().high + "-" + cb.high + "=" + (queue.getTail().high - cb.high))
     sum=sum+(queue.getTail().close - cb.high);
-
     has = false;
     return
   }
 
   //下跌趋势结束
   var range = strat.getRange(queue.getAll());
-  if (!has && range.max.high - range.min.high > 20&&(queue.getTail().open-queue.getTail().close>0) && !range.grow) {
+  if (!has && range.max.high - range.min.high > 35&&(queue.getTail().open-queue.getTail().close>0) && !range.grow) {
     this.advice('long');
     log.debug("购买：" +queue.getTail().high)
     cb = queue.getFront();
