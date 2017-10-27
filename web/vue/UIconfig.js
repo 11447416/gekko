@@ -6,19 +6,21 @@
 const CONFIG = {
   headless: false,
   api: {
+    // host: '127.0.0.1',
     host: '115.28.141.240',
     port: 3001,
   },
   ui: {
     ssl: false,
     host: '115.28.141.240',
+    // host: '127.0.0.1',
     port: 3001,
     path: '/'
   },
   adapter: 'sqlite'
 }
 
-if(typeof window === 'undefined')
+if (typeof window === 'undefined')
   module.exports = CONFIG;
 else
   window.CONFIG = CONFIG;
